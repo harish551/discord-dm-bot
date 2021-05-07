@@ -1,0 +1,35 @@
+# version: '3.0.4'
+
+# Test against the latest version of this Node.js version
+environment:
+  nodejs_version: "6"
+
+# Install scripts. (runs after repo cloning)
+install:
+  # Get the latest stable version of Node.js or io.js
+  - ps: Install-Product node $env:nodejs_version
+  # install modules
+  - npm install
+
+
+# Post-install test scripts.
+test_script:
+  # Output useful info for debugging.
+  - node --version
+  - npm --version
+  # can I really not do npm tst?
+  - npm install -g jshint
+  # run tests
+  - jshint app.js
+
+# Don't actually build.
+build: off
+ 
+platform:
+  - Any CPU
+
+configuration:
+  - Release
+
+matrix:
+  fast_finish: true
