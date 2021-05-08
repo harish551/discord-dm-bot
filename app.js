@@ -1,5 +1,3 @@
-/*jshint esversion: 6 */
-const figlet = require('figlet');
 const commando = require(`discord.js-commando`);
 const config = require('./config.json');
 const bot = new commando.Client({
@@ -10,7 +8,7 @@ const bot = new commando.Client({
 bot.on("ready", () => {
     clear();
     console.log('______');
-    bot.user.setActivity('from GitHub', { url: "https://github.com/harish551/discord-dm-bot", type: 'Helping' })
+    bot.user.setActivity('from GitHub', { url: "https://github.com/harish551/discord-dm-bot", type: 'PLAYING' })
         .then(presence => console.log(`Activity set to ${presence.game ? presence.game.name : 'none'}`))
         .catch(console.error);
 });
@@ -44,7 +42,6 @@ catch (e) {
 
 function clear() {
     console.clear();
-    console.log(figlet.textSync("Discord DM bot").green);
     console.log("\n\nDiscord DM bot. \n Sends DMs to selected members of guild.\n  Forked and improved by Harish.");
     console.log(`\nRandom send time set @ 0.01-${config.wait}s`);
     console.log(` Type  ${config.prefix}help  in a chat.\n\n`);

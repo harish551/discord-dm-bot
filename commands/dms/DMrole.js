@@ -9,27 +9,30 @@ class DMroleCommand extends commando.Command {
             group: 'dms',
             memberName: 'dmrole',
             description: 'Sends message provided to all members of the specified role.',
-            examples: [ `${config.prefix}dmrole @Administrators Hey fellas! This might reach more people than a mass ping...` ]
+            examples: [ `${config.prefix}dmrole @Administrators Hey fellas! This might reach more people than a mass ping...` ],
+            clientPermissions: ['ADMINISTRATOR'],
+            userPermissions: ['MANAGE_CHANNELS']
         });
     }
 
     async run(message, args){
+        if(message.channel.type === "dm") return;
         let role = message.mentions.roles.first();
         let msg = message.content;
         let dmGuild = message.guild;
-        let botusr = dmGuild.members.find(o => o.id == this.client.user.id);
+        let botusr = dmGuild.members.find(o => o.id === this.client.user.id);
 
         if (!botusr.hasPermission(['ADMINISTRATOR'])) {
             console.log(`WARNING: Bot is not properly configured with administrative permissions.`);
         }
 
         if(!role) {
-            message.author.send("No valid role mentioned!");
+            message.channel.send("No valid role mentioned!");
             return;
         }
 
         try {
-            msg = msg.substring(msg.indexOf("dmrole") + 6 + len(role));
+            msg = msg.substring(msg.indexOf("dmrole") + 7 + role.toString().length);
         } catch(error) {
             console.log(error);
             return;
@@ -51,27 +54,27 @@ class DMroleCommand extends commando.Command {
         for (var i = 0; i < membercount; i++) {
             let member = memberarray[i];
             if (member.user.bot) {
-                console.log(`Skipping bot with name ${member.user.username}`)
+                console.log(`Skipping bot with name ${member.user.username}`);
                 botcount++;
                 continue
             }
             let timeout = Math.floor((Math.random() * (config.wait - 0.01)) * 1000) + 10;
             
             await sleep(timeout);
-            if(i == (membercount-1)) {
+            if(i === (membercount-1)) {
                 console.log(`Waited ${timeout}ms.\t\\/\tDMing ${member.user.username}`);
             } else {
                 console.log(`Waited ${timeout}ms.\t|${i + 1}|\tDMing ${member.user.username}`);
             }
             try {
-                member.send(`${msg} \n #${timeout}`);
+                member.send(`${msg} \n`);
                 successcount++;
             } catch (error) {
                 console.log(`--Failed to send DM! ` + error)
             }
         }
-        console.log(`Sent ${successcount} ${(successcount != 1 ? `messages` : `message`)} successfully, ` +
-            `${botcount} ${(botcount != 1 ? `bots were` : `bot was`)} skipped.`);
+        console.log(`Sent ${successcount} ${(successcount !== 1 ? `messages` : `message`)} successfully, ` +
+            `${botcount} ${(botcount !== 1 ? `bots were` : `bot was`)} skipped.`);
     }
 }
 

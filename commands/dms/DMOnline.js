@@ -1,9 +1,5 @@
-/*jshint esversion: 6 */
-
 const commando = require('discord.js-commando');
-const app = require('../../app.js');
 const config = require('../../config.json');
-const { Client, Permissions } = require('discord.js');
 
 class DMOnlineCmd extends commando.Command {
     constructor(client){
@@ -12,16 +8,19 @@ class DMOnlineCmd extends commando.Command {
             group: 'dms',
             memberName: 'dmonline',
             description: 'Sends message provided to all members of the guild with status online.',
-            examples: [ `${config.prefix}dmonline Hey everyone! This might reach more people than a mass ping...` ]
+            examples: [ `${config.prefix}dmonline Hey everyone! This might reach more people than a mass ping...` ],
+            clientPermissions: ['ADMINISTRATOR'],
+            userPermissions: ['MANAGE_CHANNELS'],
         });
     }
 
     async run(message){
+        if(message.channel.type === "dm") return;
         let dmGuild = message.guild;
         let msg = message.content;
         let OnlineMembers = [];
 
-        let botusr = dmGuild.members.find(o => o.id == this.client.user.id)
+        let botusr = dmGuild.members.find(o => o.id === this.client.user.id)
         if (!botusr.hasPermission(['ADMINISTRATOR'])) {
             console.log(`WARNING: Bot is not properly configured with administrative permissions.`);
         }
@@ -79,7 +78,7 @@ class DMOnlineCmd extends commando.Command {
                     console.log(`Waited ${timeout}ms.\t|${i + 1}|\tDMing ${member.user.username}`);
                 }
                 try {
-                    member.send(`${msg} \n #${timeout}`);
+                    member.send(`${msg} \n`);
                     successcount++;
                 } catch (error) {
                     console.log(`Failed to send DM! ` + error)
